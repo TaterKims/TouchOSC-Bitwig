@@ -3,7 +3,8 @@
 loadAPI(1);
 
 host.defineController("TouchOSC", "TouchOSC", "1.0", "847dfbf0-ed5c-11e3-ac10-0800200c9a66");
-host.defineMidiPorts(1, 1);
+/* host.defineMidiPorts(1, 1); */
+host.defineMidiPorts(2, 2);
 host.addDeviceNameBasedDiscoveryPair(["TouchOSC Bridge"], ["TouchOSC Bridge"]);
 
 // Main variable:
@@ -17,6 +18,13 @@ function TouchOSC() {
     // Constants:
     this.FADERS = 101; // Start of Fader Range - 8 x track volume + 1 x master volume
     this.PANS = 91; // Start of Pan Range - 8 x track pan
+
+    // Using Channel 2
+    this.MUTES = 0;
+    this.SOLOS = 8;
+    this.ARMS = 16;
+    this.STOPS = 23;
+
     this.XY = 12; // Start of the XY Pads - 4 x X and Y, 8 total
     this.MACROS = 20; // Start of Device Macro Range - 8 macro knobs on the cursor device
     this.PARAMS = 40; // Start of Device Parameter Mappings - 8 parameter mappings on the cursor device
@@ -34,6 +42,7 @@ function TouchOSC() {
 
     // Setting Callbacks for Midi and Sysex
     host.getMidiInPort(0).setMidiCallback(onMidi);
+
     host.getMidiInPort(0).setSysexCallback(onSysex);
 
     // States:
@@ -51,6 +60,15 @@ function TouchOSC() {
     this.trackVolumeHasChanged = [];
     this.trackPan = [];
     this.trackPanHasChanged = [];
+    
+
+    this.trackMute = [];
+    this.trackMuteHasChanged = [];
+    this.trackSolo = [];
+    this.trackSoloHasChanged = [];
+    this.trackArm = [];
+    this.trackArmHasChanged = [];
+
 
     // Macros:
     this.deviceMacro = [];
@@ -79,6 +97,14 @@ function TouchOSC() {
         this.trackVolumeHasChanged[i] = false;
         this.trackPan[i] = 0;
         this.trackPanHasChanged[i] = false;
+
+        this.trackMute[i] = 0;
+        this.trackMuteHasChanged[i] = false;
+        this.trackSolo[i] = 0;
+        this.trackSoloHasChanged[i] = false;
+        this.trackArm[i] = 0;
+        this.trackArmHasChanged[i] = false;
+
         this.deviceMacro[i] = 0;
         this.deviceMacroHasChanged[i] = false;
         this.deviceMapping[i] = 0;
@@ -171,6 +197,17 @@ function init()
         // Pan
         tOSC.tracks.getTrack(i).getPan().setIndication(true);
         tOSC.tracks.getTrack(i).getPan().addValueObserver(127, getTrackValueFunc(i, tOSC.trackPan, tOSC.trackPanHasChanged));
+
+        // Mute
+        // tOSC.tracks.getTrack(i).getMute().setIndication(true);
+        tOSC.tracks.getTrack(i).getMute().addValueObserver(getTrackValueFunc(i, tOSC.trackMute, tOSC.trackMuteHasChanged));
+        // Solo
+        // tOSC.tracks.getTrack(i).getSolo().setIndication(true);
+        tOSC.tracks.getTrack(i).getSolo().addValueObserver(getTrackValueFunc(i, tOSC.trackSolo, tOSC.trackSoloHasChanged));
+        // Arm
+        // tOSC.tracks.getTrack(i).getArm().setIndication(true);
+        tOSC.tracks.getTrack(i).getArm().addValueObserver(getTrackValueFunc(i, tOSC.trackArm, tOSC.trackArmHasChanged));
+
         // Macro
         tOSC.cMacro[i] = tOSC.cDevice.getMacro(i);
         tOSC.cMacro[i].getAmount().setIndication(true);
@@ -282,7 +319,46 @@ function flush()
         if (tOSC.trackPanHasChanged[k]) {
             sendChannelController(0, tOSC.PANS + k, tOSC.trackPan[k]);
             tOSC.trackPanHasChanged[k] = false;
+
         }
+
+        if (tOSC.trackMuteHasChanged[k]) {
+            //println("tOSC.trackMuteHasChanged[k] not enabled yet");
+            if (tOSC.trackMute[k]){
+                sendChannelController(1, tOSC.MUTES + k, 127);
+            } else {
+                sendChannelController(1, tOSC.MUTES + k, 0);
+            }
+            tOSC.trackMuteHasChanged[k] = false;
+        }
+        
+        if (tOSC.trackSoloHasChanged[k]) {
+            if (tOSC.trackSolo[k]){
+                sendChannelController(1, tOSC.SOLOS + k, 127);
+            } else {
+                sendChannelController(1, tOSC.SOLOS + k, 0);
+            }
+            tOSC.trackSoloHasChanged[k] = false;
+        }
+
+        if (tOSC.trackArmHasChanged[k]) {
+            if (tOSC.trackArm[k]){
+                sendChannelController(1, tOSC.ARMS + k, 127);
+            } else {
+                sendChannelController(1, tOSC.ARMS + k, 0);
+            }
+            tOSC.trackArmHasChanged[k] = false;
+        }
+        
+        /* if (tOSC.trackSoloHasChanged[k]) {
+           sendChannelController(0, tOSC.PANS + k, tOSC.trackSolo[k]);
+           tOSC.trackSoloHasChanged[k] = false;
+           }
+           if (tOSC.trackArmHasChanged[k]) {
+           sendChannelController(0, tOSC.PANS + k, tOSC.trackArm[k]);
+           tOSC.trackArmHasChanged[k] = false;
+           } */
+
         if (tOSC.deviceMacroHasChanged[k]) {
             sendChannelController(0, tOSC.MACROS + k, tOSC.deviceMacro[k]);
             tOSC.deviceMacroHasChanged[k] = false;
@@ -305,183 +381,218 @@ function flush()
     }
 }
 
+function printobj(object){
+    var output = '';
+    for (var property in object) {
+    output += property + ': ' + object[property]+'; \n';
+    }
+    println(output);
+}
+
 // React to incoming MIDI:
 function onMidi(status, data1, data2)
 {
-    //printMidi(status, data1, data2);
+    // printMidi(status, data1, data2);
 
     // Check if it's CC values:
-    if (isChannelController(status))
-    {
-        // Check if its the Volume Faders:
-        if (data1 >= tOSC.FADERS && data1 < tOSC.FADERS + 9 ) {
-            // Is it the Master Fader?
-            if (data1 === tOSC.FADERS+8) {
-                tOSC.masterTrack.getVolume().set(data2, 128);
+    // status 177 is port 2
+    // status 176 is port 1
+    if (isChannelController(status)) {
+        if (status == 177) {
+            // println("Channel 2");
+            // printMidi(status, data1, data2);
+
+            // Check for Mute:
+            if (data1 >= tOSC.MUTES && data1 < tOSC.MUTES + 8 ) {
+                tOSC.tracks.getTrack(data1 - tOSC.MUTES).getMute().toggle();
             }
-            // Otherwise its a Track Volume Fader:
-            else {
-                tOSC.tracks.getTrack(data1 - tOSC.FADERS).getVolume().set(data2, 128);
+            // Check for Solo:
+            if (data1 >= tOSC.SOLOS && data1 < tOSC.SOLOS + 8 ) {
+                tOSC.tracks.getTrack(data1 - tOSC.SOLOS).getSolo().toggle();
             }
-        }
-        // Check for Track Panning:
-        else if (data1 >= tOSC.PANS && data1 < tOSC.PANS + 8 ) {
-            tOSC.tracks.getTrack(data1 - tOSC.PANS).getPan().set(data2, 128);
-        }
-        // Check for Device Macros:
-        else if (data1 >= tOSC.MACROS && data1 < tOSC.MACROS + 8 ) {
-            tOSC.cMacro[data1 - tOSC.MACROS].getAmount().set(data2, 128);
-        }
-        // Check for Device Mappings:
-        else if (data1 >= tOSC.PARAMS && data1 < tOSC.PARAMS + 8 ) {
-            tOSC.cPage[data1 - tOSC.PARAMS].set(data2, 128);
-        }
-        // Check for XY Pads:
-        else if (data1 >= tOSC.XY && data1 < tOSC.XY + 8 ) {
-            tOSC.uMap.getControl(data1 - tOSC.XY).set(data2, 128);
-        }
-        // If we got this far, it's not a continuous controller but some one-off Button.
-        // We only want to react to it when it's pressed (usually the value is 127 then),
-        // not on release, which usually sends a value of 0:
-        else if (data2 > 0)
-        {
-            // checking what CC value we get and react accordingly:
-            switch (data1)  {
-                case 99:
-                    tOSC.tracks.scrollTracksUp();
-                    break;
-                case 100:
-                    tOSC.tracks.scrollTracksDown();
-                    break;
-                case 29:
-                    tOSC.cTrack.selectPrevious();
-                    tOSC.trackHasChanged = true;
-                    break;
-                case 30:
-                    tOSC.cTrack.selectNext();
-                    tOSC.trackHasChanged = true;
-                    break;
-                case 31:
-                    tOSC.cDevice.switchToDevice(DeviceType.ANY,ChainLocation.PREVIOUS);
-                    tOSC.deviceHasChanged = true;
-                    break;
-                case 32:
-                    tOSC.cDevice.switchToDevice(DeviceType.ANY,ChainLocation.NEXT);
-                    tOSC.deviceHasChanged = true;
-                    break;
-                case 33:
-                    tOSC.cDevice.switchToPreviousPreset();
-                    tOSC.presetHasChanged = true;
-                    break;
-                case 34:
-                    tOSC.cDevice.switchToNextPreset();
-                    tOSC.presetHasChanged = true;
-                    break;
-                case 35:
-                    tOSC.cDevice.switchToPreviousPresetCategory();
-                    tOSC.categoryHasChanged = true;
-                    break;
-                case 36:
-                    tOSC.cDevice.switchToNextPresetCategory();
-                    tOSC.categoryHasChanged = true;
-                    break;
-                case 37:
-                    tOSC.cDevice.switchToPreviousPresetCreator();
-                    tOSC.creatorHasChanged = true;
-                    break;
-                case 38:
-                    tOSC.cDevice.switchToNextPresetCreator();
-                    tOSC.creatorHasChanged = true;
-                    break;
-                case 50:
-                    tOSC.cDevice.previousParameterPage();
-                    tOSC.pPageHasChanged = true;
-                    break;
-                case 51:
-                    tOSC.cDevice.nextParameterPage();
-                    tOSC.pPageHasChanged = true;
-                    break;
-                case 53:
-                    // Checking if the Key-Offset is in a sensible Range before applaying the Offset:
-                    if (tOSC.keyOffset < 127-tOSC.KEYCENTER-tOSC.KEYSTEP) {
-                        tOSC.keyOffset += tOSC.KEYSTEP;
-                        setNoteTable(tOSC.midiInKeys, tOSC.keyTranslation, tOSC.keyOffset);
-                    }
-                    break;
-                case 54:
-                    // Same in the other direction:
-                    if (tOSC.keyOffset > 0-tOSC.KEYCENTER+tOSC.KEYSTEP-1) {
-                        tOSC.keyOffset -= tOSC.KEYSTEP;
-                        setNoteTable(tOSC.midiInKeys, tOSC.keyTranslation, tOSC.keyOffset);
-                    }
-                    break;
-                case 55:
-                    // Same for Pads
-                    if (tOSC.padOffset < 127-tOSC.PADCENTER-tOSC.PADSTEP) {
-                        tOSC.padOffset += tOSC.PADSTEP;
-                        setNoteTable(tOSC.midiInPads, tOSC.padTranslation, tOSC.padOffset);
-                    }
-                    break;
-                case 56:
-                    // And the other way:
-                    if (tOSC.padOffset > 0-tOSC.PADCENTER+tOSC.PADSTEP-1) {
-                        tOSC.padOffset -= tOSC.PADSTEP;
-                        setNoteTable(tOSC.midiInPads, tOSC.padTranslation, tOSC.padOffset);
-                    }
-                    break;
-                case 57:
-                    tOSC.cClipWindow.scrollTracksUp();
-                    break;
-                case 58:
-                    tOSC.cClipWindow.scrollTracksDown();
-                    break;
-                case 59:
-                    tOSC.cClipWindow.scrollScenesUp();
-                    break;
-                case 60:
-                    tOSC.cClipWindow.scrollScenesDown();
-                    break;
-                case 117:
-                    tOSC.transport.stop();
-                    break;
-                case 118:
-                    tOSC.transport.play();
-                    break;
-                case 113:
-                    tOSC.transport.restart();
-                    break;
-                case 119:
-                    tOSC.transport.record();
-                    break;
-                case 114:
-                    tOSC.transport.toggleOverdub();
-                    break;
+            // Check for Arm:
+            if (data1 >= tOSC.ARMS && data1 < tOSC.ARMS + 8 ) {
+                tOSC.tracks.getTrack(data1 - tOSC.ARMS).getArm().toggle();
             }
+            // Check for Stop:
+            if (data1 >= tOSC.STOPS && data1 < tOSC.STOPS + 8 ) {
+                tOSC.tracks.getTrack(data1 - tOSC.STOPS).stop();
+            }
+            return;
         }
+        
+    
+
+    // Check if its the Volume Faders:
+    if (data1 >= tOSC.FADERS && data1 < tOSC.FADERS + 9 ) {
+        // Is it the Master Fader?
+        if (data1 === tOSC.FADERS+8) {
+            tOSC.masterTrack.getVolume().set(data2, 128);
+        }
+        // Otherwise its a Track Volume Fader:
         else {
-            // hack to get the touchOSC buttons to light up correctly.
-            // Many Controllers overwrite their own lights on buttons when the button is
-            // released, so here I tell the flush() function to update the buttons to update on release also:
-            tOSC.transpHasChanged = true;
+            tOSC.tracks.getTrack(data1 - tOSC.FADERS).getVolume().set(data2, 128);
         }
     }
-    // Now checking for some Note-On Commands I use for the Cliplauncher. First the Scenes:
-    else if (isNoteOnC2(status)) {
-        if (data1 >=100 && data1 < 108) {
-            tOSC.cScenes.launch(data1-100);
-        }
-        // and then for the Clip Matrix:
-        else if (data1 >=0 && data1 <32) {
-            // If the clip is Playing or Queued, Stop it:
-            if (tOSC.clIsPlaying[data1] || tOSC.clIsQueued[data1]) {
-                tOSC.cClipTrack[data1%4].getClipLauncherSlots().stop();
-            }
-            // otherwise launch it:
-            else{
-                tOSC.cClipTrack[data1%4].getClipLauncherSlots().launch(Math.floor(data1*0.25));
-            }
+    // Check for Track Panning:
+    else if (data1 >= tOSC.PANS && data1 < tOSC.PANS + 8 ) {
+        tOSC.tracks.getTrack(data1 - tOSC.PANS).getPan().set(data2, 128);
+    }
+    // Check for Device Macros:
+    else if (data1 >= tOSC.MACROS && data1 < tOSC.MACROS + 8 ) {
+        tOSC.cMacro[data1 - tOSC.MACROS].getAmount().set(data2, 128);
+    }
+
+    // Check for Device Mappings:
+    else if (data1 >= tOSC.PARAMS && data1 < tOSC.PARAMS + 8 ) {
+        tOSC.cPage[data1 - tOSC.PARAMS].set(data2, 128);
+    }
+    // Check for XY Pads:
+    else if (data1 >= tOSC.XY && data1 < tOSC.XY + 8 ) {
+        tOSC.uMap.getControl(data1 - tOSC.XY).set(data2, 128);
+    }
+    // If we got this far, it's not a continuous controller but some one-off Button.
+    // We only want to react to it when it's pressed (usually the value is 127 then),
+    // not on release, which usually sends a value of 0:
+    else if (data2 > 0)
+    {
+        // checking what CC value we get and react accordingly:
+        switch (data1)  {
+            case 99:
+                tOSC.tracks.scrollTracksUp();
+                break;
+            case 100:
+                tOSC.tracks.scrollTracksDown();
+                break;
+            case 29:
+                tOSC.cTrack.selectPrevious();
+                tOSC.trackHasChanged = true;
+                break;
+            case 30:
+                tOSC.cTrack.selectNext();
+                tOSC.trackHasChanged = true;
+                break;
+            case 31:
+                tOSC.cDevice.switchToDevice(DeviceType.ANY,ChainLocation.PREVIOUS);
+                tOSC.deviceHasChanged = true;
+                break;
+            case 32:
+                tOSC.cDevice.switchToDevice(DeviceType.ANY,ChainLocation.NEXT);
+                tOSC.deviceHasChanged = true;
+                break;
+            case 33:
+                tOSC.cDevice.switchToPreviousPreset();
+                tOSC.presetHasChanged = true;
+                break;
+            case 34:
+                tOSC.cDevice.switchToNextPreset();
+                tOSC.presetHasChanged = true;
+                break;
+            case 35:
+                tOSC.cDevice.switchToPreviousPresetCategory();
+                tOSC.categoryHasChanged = true;
+                break;
+            case 36:
+                tOSC.cDevice.switchToNextPresetCategory();
+                tOSC.categoryHasChanged = true;
+                break;
+            case 37:
+                tOSC.cDevice.switchToPreviousPresetCreator();
+                tOSC.creatorHasChanged = true;
+                break;
+            case 38:
+                tOSC.cDevice.switchToNextPresetCreator();
+                tOSC.creatorHasChanged = true;
+                break;
+            case 50:
+                tOSC.cDevice.previousParameterPage();
+                tOSC.pPageHasChanged = true;
+                break;
+            case 51:
+                tOSC.cDevice.nextParameterPage();
+                tOSC.pPageHasChanged = true;
+                break;
+            case 53:
+                // Checking if the Key-Offset is in a sensible Range before applaying the Offset:
+                if (tOSC.keyOffset < 127-tOSC.KEYCENTER-tOSC.KEYSTEP) {
+                    tOSC.keyOffset += tOSC.KEYSTEP;
+                    setNoteTable(tOSC.midiInKeys, tOSC.keyTranslation, tOSC.keyOffset);
+                }
+                break;
+            case 54:
+                // Same in the other direction:
+                if (tOSC.keyOffset > 0-tOSC.KEYCENTER+tOSC.KEYSTEP-1) {
+                    tOSC.keyOffset -= tOSC.KEYSTEP;
+                    setNoteTable(tOSC.midiInKeys, tOSC.keyTranslation, tOSC.keyOffset);
+                }
+                break;
+            case 55:
+                // Same for Pads
+                if (tOSC.padOffset < 127-tOSC.PADCENTER-tOSC.PADSTEP) {
+                    tOSC.padOffset += tOSC.PADSTEP;
+                    setNoteTable(tOSC.midiInPads, tOSC.padTranslation, tOSC.padOffset);
+                }
+                break;
+            case 56:
+                // And the other way:
+                if (tOSC.padOffset > 0-tOSC.PADCENTER+tOSC.PADSTEP-1) {
+                    tOSC.padOffset -= tOSC.PADSTEP;
+                    setNoteTable(tOSC.midiInPads, tOSC.padTranslation, tOSC.padOffset);
+                }
+                break;
+            case 57:
+                tOSC.cClipWindow.scrollTracksUp();
+                break;
+            case 58:
+                tOSC.cClipWindow.scrollTracksDown();
+                break;
+            case 59:
+                tOSC.cClipWindow.scrollScenesUp();
+                break;
+            case 60:
+                tOSC.cClipWindow.scrollScenesDown();
+                break;
+            case 117:
+                tOSC.transport.stop();
+                break;
+            case 118:
+                tOSC.transport.play();
+                break;
+            case 113:
+                tOSC.transport.restart();
+                break;
+            case 119:
+                tOSC.transport.record();
+                break;
+            case 114:
+                tOSC.transport.toggleOverdub();
+                break;
         }
     }
+    else {
+        // hack to get the touchOSC buttons to light up correctly.
+        // Many Controllers overwrite their own lights on buttons when the button is
+        // released, so here I tell the flush() function to update the buttons to update on release also:
+        tOSC.transpHasChanged = true;
+    }
+}
+// Now checking for some Note-On Commands I use for the Cliplauncher. First the Scenes:
+else if (isNoteOnC2(status)) {
+    if (data1 >=100 && data1 < 108) {
+        tOSC.cScenes.launch(data1-100);
+    }
+    // and then for the Clip Matrix:
+    else if (data1 >=0 && data1 <32) {
+        // If the clip is Playing or Queued, Stop it:
+        if (tOSC.clIsPlaying[data1] || tOSC.clIsQueued[data1]) {
+            tOSC.cClipTrack[data1%4].getClipLauncherSlots().stop();
+        }
+        // otherwise launch it:
+        else{
+            tOSC.cClipTrack[data1%4].getClipLauncherSlots().launch(Math.floor(data1*0.25));
+        }
+    }
+}
 }
 
 function onSysex(data)
