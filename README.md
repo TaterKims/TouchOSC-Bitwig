@@ -1,37 +1,30 @@
-TouchOSC-Bitwig
-===============
-
-Mappings and Script for Touch OSC and Bitwig
+# TouchOSC mapping for Bitwig Studio
 
 - http://hexler.net/software/touchosc
 - http://hexler.net/software/touchosc-android
 
-Features:
+## Features:
 
-- Mixer Page with Transport Controls, Track and Master Volume, Pan.
+- APC40 style mixer page with transport controls, track and master volume, pan, send 1, send 2, device control and macro knobs. Designed to be used with a separate grid controller.
 
-- Device Macro Page with Cursor Track and Device Navigation, Macro Faders and Preset Navigation.
+- Device control / macro page with cursor track and device navigation.
 
-- Device Parameter Page, also with Cursor Track and Device Navigation, Parameter Faders and Map Navigation.
+- Drum Pads, 4 x 4, sending on midi channel 10, transpose up and down, macro knobs.
 
-- Clip Launcher 8 x 4 Clips + 8 Scenes. Launch, Stop, Record (empty Slots), Launch Scenes. Move the Window around.
+- Keyboard, 2 Octave, sending on midi channel 1, velocity on y-axis, transpose up and down, macro knobs.
 
-- Drum Pads, 4 x 4, sending on Midi Channel 10, Velocity on Y-Axis, Transpose Up and Down.
+- XY Pads, 4 x **TODO sliders and bypass buttons**
 
-- Keyboard, 1 Octave, sending on Midi Channel 1, Velocity on Y-Axis, Transpose Up and Down.
+- A couple alternative pages with keyboard and XY pads and macro controls.
 
-- XY Pads, 4 x.
+- Setup Page with One-Off Buttons to Midi-Learn the XY Pads (sending the same CCs). Contains in progress clip Launcher 8 x 4 Clips + 8 Scenes. Launch, Stop, Record (empty Slots), Launch Scenes. Move the Window around.
 
-- Setup Page with One-Off Buttons to Midi-Learn the XY Pads (sending the same CCs).
-
-
-Script Based on the Multi Bi-Directional Script from Thomas Henzle.
-
-Basic TouchOSC Layout by Astartes, improved and extended a lot by Thomas Helzle ;-)
+Based on initial work on TouchOSC layout by Astartes and modified by Thomas Helzle and bi-directional script by Thomas Henzle.
 
 Find Screenshots of the Layout here:
 https://github.com/ThomasHelzle/TouchOSC-Bitwig/wiki
 
-Enjoy!
-
-Tom
+## Ideas
+- Perform view VU meters
+- Create layout for mixdown?
+- Sync track bank focus changes with Launchpad (possible to pass data between different control scripts?)
