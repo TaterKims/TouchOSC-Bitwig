@@ -1,9 +1,10 @@
 # TouchOSC mapping for Bitwig Studio
 
-- http://hexler.net/software/touchosc
-- http://hexler.net/software/touchosc-android
+[![Image](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)
 
 ## Features:
+
+[![Layout view](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)
 
 - APC40 style mixer page with transport controls, track and master volume, pan, send 1, send 2, device control and macro knobs. Designed to be used with a separate grid controller.
 
@@ -23,6 +24,9 @@ Based on initial work on TouchOSC layout by Astartes and modified by Thomas Helz
 
 Find Screenshots of the Layout here:
 https://github.com/ThomasHelzle/TouchOSC-Bitwig/wiki
+
+- http://hexler.net/software/touchosc
+- http://hexler.net/software/touchosc-android
 
 ## Ideas
 - Perform view VU meters
