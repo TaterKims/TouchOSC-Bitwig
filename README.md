@@ -1,14 +1,18 @@
-# TouchOSC mapping for Bitwig Studio
+# TouchOSC mapping for Bitwig Studio 2.0
+
+**See release 1.0 for Bitwig Studio 1.3.5+ support.**
 
 [![Image](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)
+
+For more detailed info see blog post at [http://chronicoverengineering.com/touchosc-bitwig/](http://chronicoverengineering.com/touchosc-bitwig/).
 
 ## Features:
 
 [![Layout view](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)
 
-- APC40 style mixer page with transport controls, track and master volume, pan, send 1, send 2, device control and macro knobs. Designed to be used with a separate grid controller.
+- APC40 style mixer page with transport controls, track and master volume, pan, send 1, send 2, remote control knobs. Designed to be used with a separate grid controller.
 
-- Device control / macro page with cursor track and device navigation.
+- Remote control page with cursor track and device navigation.
 
 - Drum Pads, 4 x 4, sending on midi channel 10, transpose up and down, macro knobs.
 
@@ -22,13 +26,8 @@
 
 Based on initial work on TouchOSC layout by Astartes and modified by Thomas Helzle and bi-directional script by Thomas Henzle.
 
-Find Screenshots of the Layout here:
-https://github.com/ThomasHelzle/TouchOSC-Bitwig/wiki
-
-- http://hexler.net/software/touchosc
-- http://hexler.net/software/touchosc-android
-
 ## Ideas
 - Perform view VU meters
 - Create layout for mixdown?
 - Sync track bank focus changes with Launchpad (possible to pass data between different control scripts?)
+- Sync device RemoteControl titles and track names possible?
