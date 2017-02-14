@@ -1,10 +1,10 @@
 // Touch OSC Controller Script
 
-loadAPI(1);
+loadAPI(2);
 
-host.defineController("TouchOSC", "TouchOSC", "1.0", "847dfbf0-ed5c-11e3-ac10-0800200c9a66");
+host.defineController("TouchOSC", "TouchOSC", "2.0", "847dfbf0-ed5c-11e3-ac10-0800200c9a66");
 /* host.defineMidiPorts(1, 1); */
-host.defineMidiPorts(2, 2);
+host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["TouchOSC Bridge"], ["TouchOSC Bridge"]);
 
 // Main variable:
@@ -156,7 +156,9 @@ function TouchOSC() {
     this.masterTrack = host.createMasterTrack(0);
     this.tracks = host.createMainTrackBank(8, 2, 0);
     this.cTrack = host.createCursorTrack(1, 0);
-    this.cDevice = tOSC.cTrack.getPrimaryDevice();
+
+    this.cDevice = tOSC.cTrack.createCursorDevice(); //getPrimaryDevice();
+
     this.uMap = host.createUserControls(8);
     this.cClipWindow = host.createTrackBank(4, 0, 8);
     this.cScenes = tOSC.cClipWindow.getClipLauncherScenes();
@@ -231,13 +233,16 @@ function init()
         tOSC.tracks.getTrack(i).getArm().addValueObserver(getTrackValueFunc(i, tOSC.trackArm, tOSC.trackArmHasChanged));
 
         // Macro
-        tOSC.cMacro[i] = tOSC.cDevice.getMacro(i);
-        tOSC.cMacro[i].getAmount().setIndication(true);
-        tOSC.cMacro[i].getAmount().addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMacro, tOSC.deviceMacroHasChanged));
+        // tOSC.cMacro[i] = tOSC.cDevice.getMacro(i);
+        tOSC.cMacroRemoteControl = tOSC.cDevice.createIndependentRemoteControls("cMacroRemoteControl", 8, "");
+        
+        
+        //tOSC.cMacro[i].getAmount().setIndication(true);
+        //tOSC.cMacro[i].getAmount().addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMacro, tOSC.deviceMacroHasChanged));
         // Parameter Mapping
-        tOSC.cPage[i] = tOSC.cDevice.getParameter(i);
-        tOSC.cPage[i].setIndication(true);
-        tOSC.cPage[i].addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMapping, tOSC.deviceMappingHasChanged));
+        // TODO: tOSC.cPage[i] = tOSC.cDevice.getParameter(i);
+        // tOSC.cPage[i].setIndication(true);
+        // tOSC.cPage[i].addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMapping, tOSC.deviceMappingHasChanged));
         // XY Pads
         tOSC.uMap.getControl(i).setLabel("XY Pad " + (Math.ceil(i/2+0.2)) + " - " + ((i%2<1) ? "X":"Y"));
         tOSC.uMap.getControl(i).addValueObserver(127, getTrackValueFunc(i, tOSC.xyPad, tOSC.xyPadHasChanged));
@@ -258,55 +263,56 @@ function init()
                                                    host.getMidiOutPort(0).sendMidi(177, 100, ((on) ? 5 : 0) );
                                                });
 
-    tOSC.cDevice.addPresetNameObserver(50, "None", function(on)
-                                       {
-                                           if(tOSC.presetHasChanged) {
-                                               host.showPopupNotification(on);
-                                               tOSC.presetHasChanged = false;
-                                           }
-                                       });
-    tOSC.cDevice.addPresetCategoryObserver(50, "None", function(on)
-                                           {
-                                               if(tOSC.categoryHasChanged) {
-                                                   host.showPopupNotification(on);
-                                                   tOSC.categoryHasChanged = false;
-                                               }
-                                           });
-    tOSC.cDevice.addPresetCreatorObserver(50, "None", function(on)
-                                          {
-                                              if(tOSC.creatorHasChanged) {
-                                                  host.showPopupNotification(on);
-                                                  tOSC.creatorHasChanged = false;
-                                              }
-                                          });
-    tOSC.cDevice.addNameObserver(50, "None", function(on)
-                                 {
-                                     if(tOSC.deviceHasChanged) {
-                                         host.showPopupNotification(on);
-                                         tOSC.deviceHasChanged = false;
-                                     }
-                                 });
-    tOSC.cTrack.addNameObserver(50, "None", function(on)
-                                {
-                                    if(tOSC.trackHasChanged) {
-                                        host.showPopupNotification(on);
-                                        tOSC.trackHasChanged = false;
-                                    }
-                                });
-    tOSC.cDevice.addPageNamesObserver(function(names)
-                                      {
-                                          tOSC.pageNames = [];
-                                          for(var i=0; i<arguments.length; i++) {
-                                              tOSC.pageNames[i] = arguments[i];
-                                          }
-                                      });
-    tOSC.cDevice.addSelectedPageObserver(0, function(on)
-                                         {
-                                             if(tOSC.pPageHasChanged) {
-                                                 host.showPopupNotification(tOSC.pageNames[on]);
-                                                 tOSC.pPageHasChanged = false;
-                                             }
-                                         });
+    // TODO: Use Browser API
+    // tOSC.cDevice.addPresetNameObserver(50, "None", function(on)
+    //                                    {
+    //                                        if(tOSC.presetHasChanged) {
+    //                                            host.showPopupNotification(on);
+    //                                            tOSC.presetHasChanged = false;
+    //                                        }
+    //                                    });
+    // tOSC.cDevice.addPresetCategoryObserver(50, "None", function(on)
+    //                                        {
+    //                                            if(tOSC.categoryHasChanged) {
+    //                                                host.showPopupNotification(on);
+    //                                                tOSC.categoryHasChanged = false;
+    //                                            }
+    //                                        });
+    // tOSC.cDevice.addPresetCreatorObserver(50, "None", function(on)
+    //                                       {
+    //                                           if(tOSC.creatorHasChanged) {
+    //                                               host.showPopupNotification(on);
+    //                                               tOSC.creatorHasChanged = false;
+    //                                           }
+    //                                       });
+    // tOSC.cDevice.addNameObserver(50, "None", function(on)
+    //                              {
+    //                                  if(tOSC.deviceHasChanged) {
+    //                                      host.showPopupNotification(on);
+    //                                      tOSC.deviceHasChanged = false;
+    //                                  }
+    //                              });
+    // tOSC.cTrack.addNameObserver(50, "None", function(on)
+    //                             {
+    //                                 if(tOSC.trackHasChanged) {
+    //                                     host.showPopupNotification(on);
+    //                                     tOSC.trackHasChanged = false;
+    //                                 }
+    //                             });
+    // tOSC.cDevice.addPageNamesObserver(function(names)
+    //                                   {
+    //                                       tOSC.pageNames = [];
+    //                                       for(var i=0; i<arguments.length; i++) {
+    //                                           tOSC.pageNames[i] = arguments[i];
+    //                                       }
+    //                                   });
+    // tOSC.cDevice.addSelectedPageObserver(0, function(on)
+    //                                      {
+    //                                          if(tOSC.pPageHasChanged) {
+    //                                              host.showPopupNotification(tOSC.pageNames[on]);
+    //                                              tOSC.pPageHasChanged = false;
+    //                                          }
+    //                                      });
 
     // Pheww, that was a lot of Boilerplate ;-)
 
