@@ -582,11 +582,11 @@ function onMidi(status, data1, data2)
                 tOSC.creatorHasChanged = true;
                 break;
             case 50:
-                tOSC.cDevice.previousParameterPage();
+                tOSC.cRemoteControl.selectPreviousPage(true);
                 tOSC.pPageHasChanged = true;
                 break;
             case 51:
-                tOSC.cDevice.nextParameterPage();
+                tOSC.cRemoteControl.selectNextPage(true);
                 tOSC.pPageHasChanged = true;
                 break;
             case 53:
