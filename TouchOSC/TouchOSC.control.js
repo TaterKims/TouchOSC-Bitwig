@@ -198,6 +198,8 @@ function init()
         tOSC.masterVolumeHasChanged = true;
     });
 
+    tOSC.cRemoteControl = tOSC.cDevice.createMainRemoteControls(8);
+
     for (var j=0; j<4; j++) {
         tOSC.cClipTrack[j] = tOSC.cClipWindow.getTrack(j);
         tOSC.cSlots[j] = tOSC.cClipTrack[j].getClipLauncherSlots();
@@ -232,20 +234,14 @@ function init()
         // tOSC.tracks.getTrack(i).getArm().setIndication(true);
         tOSC.tracks.getTrack(i).getArm().addValueObserver(getTrackValueFunc(i, tOSC.trackArm, tOSC.trackArmHasChanged));
 
-        // Macro
-        // tOSC.cMacro[i] = tOSC.cDevice.getMacro(i);
-        tOSC.cMacroRemoteControl = tOSC.cDevice.createIndependentRemoteControls("cMacroRemoteControl", 8, "");
+
+        tOSC.cRemoteControl.getParameter(i).setIndication(true);
+        tOSC.cRemoteControl.getParameter(i).addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMacro, tOSC.deviceMacroHasChanged));
         
-        
-        //tOSC.cMacro[i].getAmount().setIndication(true);
-        //tOSC.cMacro[i].getAmount().addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMacro, tOSC.deviceMacroHasChanged));
-        // Parameter Mapping
-        // TODO: tOSC.cPage[i] = tOSC.cDevice.getParameter(i);
-        // tOSC.cPage[i].setIndication(true);
-        // tOSC.cPage[i].addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMapping, tOSC.deviceMappingHasChanged));
         // XY Pads
         tOSC.uMap.getControl(i).setLabel("XY Pad " + (Math.ceil(i/2+0.2)) + " - " + ((i%2<1) ? "X":"Y"));
         tOSC.uMap.getControl(i).addValueObserver(127, getTrackValueFunc(i, tOSC.xyPad, tOSC.xyPadHasChanged));
+        
         // Clips
         // for(var k=0; k<4; k++) {
 
@@ -510,7 +506,11 @@ function onMidi(status, data1, data2)
                 tOSC.tracks.getTrack(data1 - tOSC.MAINKNOBS).getSend(1).set(data2, 128);
                 break;
             case 3:
-                tOSC.cMacro[data1 - tOSC.MAINKNOBS].getAmount().set(data2, 128);
+                // println("Was " + tOSC.cRemoteControl.getParameter(data1 - tOSC.MAINKNOBS));
+                // println("Set value " + data2);
+                
+                tOSC.cRemoteControl.getParameter(data1 - tOSC.MAINKNOBS).getAmount().set(data2, 128);
+                //tOSC.cMacro[data1 - tOSC.MAINKNOBS].getAmount().set(data2, 128);
                 break;
             case 4:
                 tOSC.cPage[data1 - tOSC.MAINKNOBS].set(data2, 128);
@@ -520,13 +520,9 @@ function onMidi(status, data1, data2)
         
         // Check for Device Macros:
         else if (data1 >= tOSC.MACROS && data1 < tOSC.MACROS + 8 ) {
-            tOSC.cMacro[data1 - tOSC.MACROS].getAmount().set(data2, 128);
+            tOSC.cRemoteControl.getParameter(data1 - tOSC.MACROS).getAmount().set(data2, 128);
         }
 
-        // Check for Device Mappings:
-        else if (data1 >= tOSC.PARAMS && data1 < tOSC.PARAMS + 8 ) {
-            tOSC.cPage[data1 - tOSC.PARAMS].set(data2, 128);
-        }
         // Check for XY Pads:
         else if (data1 >= tOSC.XY && data1 < tOSC.XY + 8 ) {
             tOSC.uMap.getControl(data1 - tOSC.XY).set(data2, 128);
