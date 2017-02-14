@@ -28,7 +28,9 @@ function TouchOSC() {
 
     this.XY = 12; // Start of the XY Pads - 4 x X and Y, 8 total
     this.MACROS = 20; // Start of Device Macro Range - 8 macro knobs on the cursor device
-    this.PARAMS = 40; // Start of Device Parameter Mappings - 8 parameter mappings on the cursor device
+    
+    // CC's for deprecated device controls 40-47 handled seperately
+    
     this.PADCENTER = 36; // Start Offset of Pads
     this.PADSTEP = 16; // Pad Pagesize per Step
     this.KEYCENTER = 36; // Start Offset of Pads
@@ -401,10 +403,6 @@ function flush()
             sendChannelController(0, tOSC.MACROS + k, tOSC.deviceMacro[k]);
             tOSC.deviceMacroHasChanged[k] = false;
         }
-        if (tOSC.deviceMappingHasChanged[k]) {
-            sendChannelController(0, tOSC.PARAMS + k, tOSC.deviceMapping[k]);
-            tOSC.deviceMappingHasChanged[k] = false;
-        }
         if (tOSC.xyPadHasChanged[k]) {
             sendChannelController(0, tOSC.XY + k, tOSC.xyPad[k]);
             printMidi(0,tOSC.XY + k, tOSC.xyPad[k]);
@@ -512,9 +510,6 @@ function onMidi(status, data1, data2)
                 tOSC.cRemoteControl.getParameter(data1 - tOSC.MAINKNOBS).getAmount().set(data2, 128);
                 //tOSC.cMacro[data1 - tOSC.MAINKNOBS].getAmount().set(data2, 128);
                 break;
-            case 4:
-                tOSC.cPage[data1 - tOSC.MAINKNOBS].set(data2, 128);
-                break;
             }
         }
         
@@ -580,6 +575,31 @@ function onMidi(status, data1, data2)
             case 38:
                 tOSC.cDevice.switchToNextPresetCreator();
                 tOSC.creatorHasChanged = true;
+                break;
+            case 40:
+                // TODO: implement these
+                println("Stop all clips")
+                break;
+            case 41:
+                println("Unmute all.")
+                break;
+            case 42:
+                println("Unsolo all.")
+                break;                
+            case 43:
+                println("Unarm all.")
+                break;
+            case 44:
+                println("Automation write.")
+                break;
+            case 45:
+                println("Return to automation control.")
+                break;
+            case 46:
+                println("Clip OVR")
+                break;
+            case 47:
+                println("Return all to Arrangement.")
                 break;
             case 50:
                 tOSC.cRemoteControl.selectPreviousPage(true);
