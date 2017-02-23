@@ -200,7 +200,7 @@ function init()
         tOSC.masterVolumeHasChanged = true;
     });
 
-    tOSC.cRemoteControl = tOSC.cDevice.createMainRemoteControls(8);
+    tOSC.cRemoteControl = tOSC.cDevice.createCursorRemoteControlsPage(8);
 
     for (var j=0; j<4; j++) {
         tOSC.cClipTrack[j] = tOSC.cClipWindow.getTrack(j);
