@@ -1,12 +1,13 @@
 # TouchOSC mapping for Bitwig Studio 2.0
 
-**See release 1.0 for Bitwig Studio 1.3.5+ support.**
+**See [release 1.0](https://github.com/jasalt/TouchOSC-Bitwig/releases/tag/1.0) for Bitwig Studio 1.3.5+ support.**
 
 [![Image](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)
 
 For more detailed info see blog post at [http://chronicoverengineering.com/touchosc-bitwig/](http://chronicoverengineering.com/touchosc-bitwig/).
 
 ## Features:
+Screenshots from V1.0.
 
 [![Layout view](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)
 
