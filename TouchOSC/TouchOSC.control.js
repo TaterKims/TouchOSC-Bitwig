@@ -541,15 +541,14 @@ function onMidi(status, data1, data2)
                 break;
             case 30:
                 tOSC.cTrack.selectNext();
-                //refreshMappings()
                 tOSC.trackHasChanged = true;
                 break;
             case 31:
-                tOSC.cDevice.switchToDevice(DeviceType.ANY,ChainLocation.PREVIOUS);
+                tOSC.cDevice.selectPrevious();
                 tOSC.deviceHasChanged = true;
                 break;
             case 32:
-                tOSC.cDevice.switchToDevice(DeviceType.ANY,ChainLocation.NEXT);
+                tOSC.cDevice.selectNext(); //switchToDevice(DeviceType.ANY,ChainLocation.NEXT);
                 tOSC.deviceHasChanged = true;
                 break;
             case 33:
