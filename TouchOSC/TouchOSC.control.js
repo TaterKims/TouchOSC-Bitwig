@@ -129,7 +129,7 @@ function TouchOSC() {
         this.deviceMappingHasChanged[i] = false;
         this.xyPad[i] = 0;
         this.xyPadHasChanged[i] = false;
-        for (var j=0; j<4; j++) {
+        for (var j=0; j<7; j++) {
             this.clIsPlaying[j+i*4] = false;
             this.clIsRecording[j+i*4] = false;
             this.clIsQueued[j+i*4] = false;
@@ -162,7 +162,7 @@ function TouchOSC() {
     this.cDevice = tOSC.cTrack.createCursorDevice(); //getPrimaryDevice();
 
     this.uMap = host.createUserControls(8);
-    this.cClipWindow = host.createTrackBank(4, 0, 8);
+    this.cClipWindow = host.createTrackBank(7, 0, 8);
     this.cScenes = tOSC.cClipWindow.getClipLauncherScenes();
 
     this.cMacro = [];
@@ -202,7 +202,7 @@ function init()
 
     tOSC.cRemoteControl = tOSC.cDevice.createCursorRemoteControlsPage(8);
 
-    for (var j=0; j<4; j++) {
+    for (var j=0; j<7; j++) {
         tOSC.cClipTrack[j] = tOSC.cClipWindow.getTrack(j);
         tOSC.cSlots[j] = tOSC.cClipTrack[j].getClipLauncherSlots();
         tOSC.cSlots[j].setIndication(true);
@@ -409,7 +409,7 @@ function flush()
             tOSC.xyPadHasChanged[k] = false;
         }
         // Add another 4 step Loop for the Clip Launcher Grid:
-        for(var m=0; m<4; m++) {
+        for(var m=0; m<7; m++) {
             host.getMidiOutPort(0).sendMidi(146, m+k*4, tOSC.clColor[m+k*4]);
             host.getMidiOutPort(0).sendMidi(145, m+k*4, (tOSC.clBright[m+k*4]) ? 1 : 0);
             //println(tOSC.clColor[m+k*4]);
@@ -744,7 +744,7 @@ function setNoteTable(midiIn, table, offset) {
 // but in addition Colours can be "On" or "Off", brigher or dimmer:
 function updateClipColors () {
     for (var i=0; i<8; i++) {
-        for(var j=0; j<4; j++){
+        for(var j=0; j<7; j++){
             if (tOSC.clIsQueued[j+i*4]) {
                 tOSC.clColor[j+i*4] = 3; // Yellow
                 tOSC.clBright[j+i*4] = true;
