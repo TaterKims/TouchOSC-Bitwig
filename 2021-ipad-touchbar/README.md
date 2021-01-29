@@ -1,11 +1,11 @@
 # Novation SL49mk3 style TouchOSC mapping for Bitwig Studio
-TouchOSC layout imitating the important parts of SL49mk3 DAW control surface layout for having the same experience in more portable fashion. Uses MIDI which [enables using USB connection](https://hexler.net/news/post/uncut-the-wire). On Mac it's best to be used in conjunction with [MidiTouchbar](https://urbanlienert.com/miditouchbar/).
+TouchOSC layout imitating the important parts of SL49mk3 DAW control surface layout for having the same experience in more portable fashion. On Mac it's best to be used in conjunction with [MidiTouchbar](https://urbanlienert.com/miditouchbar/).
 
 Based on APC40 imitation using iPad Mini and Launchpad Mini (2017-ipad-launchpad), which got abandoned after getting Maschine Jam.
 
 ## Novation SL49mk3 layout
 
-Has a nice subset of traditional APC40 functionality plus screens for device parameters as in Push controllers.
+Nice subset of traditional APC40 functionality plus screens for device parameters as in Push controllers.
 
 ![SL49mk3 layout](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/2021-ipad-touchbar/media/sl49mk3.jpg)
 

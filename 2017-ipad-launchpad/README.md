@@ -1,13 +1,13 @@
 # TouchOSC mapping for Bitwig Studio 2.0+
 
-[![Image](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/2017-ipad-launchpad/media/image.jpg)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/image.jpg)
+![Image](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/2017-ipad-launchpad/media/image.jpg)
 
 ## Status
 Built on BWS 2 (API version 2), quickly tested on BWS 3.3.1 and it mostly worked. There's a [issue](https://github.com/jasalt/TouchOSC-Bitwig/issues/2) filed about compatibility so there might need fixing some deprecated API features.
 
 ## Features
 
-[![Layout view](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/2017-ipad-launchpad/media/anim.gif)](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/media/anim.gif)
+![Layout view](https://raw.github.com/jasalt/TouchOSC-Bitwig/master/2017-ipad-launchpad/media/anim.gif)
 
 - APC40 style mixer page with transport controls, track and master volume, pan, send 1, send 2, remote control knobs. Designed to be used with a separate grid controller.
 - Remote control page with cursor track and device navigation.
