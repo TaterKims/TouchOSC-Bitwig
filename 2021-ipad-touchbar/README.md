@@ -27,5 +27,3 @@ Partially working, needs some fixes. Should be in usable condition in Q1 (2021) 
 - [ ] Clip launcher is glitchy. Original code used 4 tracks and 8 clips for clip launcher, was a bit hard wired to do just that and needs some more work.
 - [ ] Layout is rough
 
-# Credits
-Based on TouchOSC layout by Astartes and modified by Thomas Helzle.
