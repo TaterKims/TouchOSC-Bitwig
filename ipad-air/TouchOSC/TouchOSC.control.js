@@ -164,7 +164,7 @@ function TouchOSC() {
     this.cDevice = tOSC.cTrack.createCursorDevice(); //getPrimaryDevice();
 
     this.uMap = host.createUserControls(8);
-    this.cClipWindow = host.createTrackBank(8, 0, 2);
+    this.cClipWindow = host.createTrackBank(8, 0, 4);
     this.cScenes = tOSC.cClipWindow.getClipLauncherScenes();
 
     this.cMacro = [];
@@ -240,7 +240,7 @@ function init()
 
 
         tOSC.cRemoteControl.getParameter(i).setIndication(true);
-        tOSC.cRemoteControl.getParameter(i).addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMacro, tOSC.deviceMacroHasChanged));
+    tOSC.cRemoteControl.getParameter(i).addValueObserver(127, getTrackValueFunc(i, tOSC.deviceMacro, tOSC.deviceMacroHasChanged));
         
         // XY Pads
         tOSC.uMap.getControl(i).setLabel("XY Pad " + (Math.ceil(i/2+0.2)) + " - " + ((i%2<1) ? "X":"Y"));
@@ -558,7 +558,7 @@ function onMidi(status, data1, data2)
                 tOSC.deviceHasChanged = true;
                 break;
             case 33:
-                tOSC.cDevice.switchToPreviousPreset();
+                tOSC.cDevice.PopupBrowser.selectNextFile();
                 tOSC.presetHasChanged = true;
                 break;
             case 34:
@@ -684,7 +684,7 @@ function onMidi(status, data1, data2)
             tOSC.cScenes.launch(data1-100);
         }
         // and then for the Clip Matrix:
-        else if (data1 >=0 && data1 <16) {
+        else if (data1 >=0 && data1 <32) {
             // If the clip is Playing or Queued, Stop it:
             if (tOSC.clIsPlaying[data1] || tOSC.clIsQueued[data1]) {
                 tOSC.cClipTrack[data1%8].getClipLauncherSlots().stop();
